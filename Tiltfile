@@ -101,13 +101,19 @@ if not ci:
 def k8s_yaml_with_ns(objects):
     return k8s_yaml(namespace_inject(objects, namespace))
 
-local_resource(
-    name = "const-gen",
-    deps = ["scripts", "clients", "ethereum/.env.test"],
-    cmd = 'tilt docker build -- --target const-export -f Dockerfile.const -o type=local,dest=. --build-arg num_guardians=%s .' % (num_guardians),
-    env = {"DOCKER_BUILDKIT": "1"},
-    allow_parallel = True,
-    trigger_mode = trigger_mode,
+docker_build(
+    ref = "cli-gen",
+    context = ".",
+    dockerfile = "Dockerfile.cli",
+    only = ["README.md", "cert.pem", "ethereum", "solana/idl", "package.json", "package-lock.json", "sdk/js", "clients/js"],
+)
+
+docker_build(
+    ref = "const-gen",
+    context = ".",
+    dockerfile = "Dockerfile.const",
+    build_args={"num_guardians":'%s'%(num_guardians)},
+    only = ["README.md", "cert.pem", "scripts", "ethereum/.env.test"],
 )
 
 # node
@@ -430,7 +436,6 @@ if solana or pythnet:
             port_forward(8900, name = "Solana WS [:8900]", host = webHost),
             port_forward(9000, name = "Solana PubSub [:9000]", host = webHost),
         ],
-        resource_deps = ["const-gen"],
         labels = ["solana"],
         trigger_mode = trigger_mode,
     )
@@ -526,7 +531,6 @@ k8s_resource(
     port_forwards = [
         port_forward(8545, name = "Ganache RPC [:8545]", host = webHost),
     ],
-    resource_deps = ["const-gen"],
     labels = ["evm"],
     trigger_mode = trigger_mode,
 )
@@ -539,7 +543,6 @@ if evm2:
         port_forwards = [
             port_forward(8546, name = "Ganache RPC [:8546]", host = webHost),
         ],
-        resource_deps = ["const-gen"],
         labels = ["evm"],
         trigger_mode = trigger_mode,
     )
@@ -586,7 +589,7 @@ if ci_tests:
         "accountant-ci-tests",
         labels = ["ci"],
         trigger_mode = trigger_mode,
-        resource_deps = ["const-gen"], # uses devnet-consts.json, but wormchain/contracts/tools/test_accountant.sh handles waiting for guardian, not having deps gets the build earlier
+        # uses devnet-consts.json, but wormchain/contracts/tools/test_accountant.sh handles waiting for guardian, not having deps gets the build earlier
     )
 
 if terra_classic:
@@ -610,7 +613,6 @@ if terra_classic:
             port_forward(26657, name = "Terra RPC [:26657]", host = webHost),
             port_forward(1317, name = "Terra LCD [:1317]", host = webHost),
         ],
-        resource_deps = ["const-gen"],
         labels = ["terra"],
         trigger_mode = trigger_mode,
     )
@@ -658,7 +660,6 @@ if terra2:
             port_forward(26658, container_port = 26657, name = "Terra 2 RPC [:26658]", host = webHost),
             port_forward(1318, container_port = 1317, name = "Terra 2 LCD [:1318]", host = webHost),
         ],
-        resource_deps = ["const-gen"],
         labels = ["terra2"],
         trigger_mode = trigger_mode,
     )
@@ -706,7 +707,6 @@ if algorand:
             port_forward(4002, name = "KMD [:4002]", host = webHost),
             port_forward(8980, name = "Indexer [:8980]", host = webHost),
         ],
-        resource_deps = ["const-gen"],
         labels = ["algorand"],
         trigger_mode = trigger_mode,
     )
@@ -730,7 +730,6 @@ if sui:
             port_forward(5003, name = "Faucet [:5003]", host = webHost),
             port_forward(9184, name = "Prometheus [:9184]", host = webHost),
         ],
-#        resource_deps = ["const-gen"],
         labels = ["sui"],
         trigger_mode = trigger_mode,
     )
@@ -758,7 +757,6 @@ if near:
             port_forward(3030, name = "Node [:3030]", host = webHost),
             port_forward(3031, name = "webserver [:3031]", host = webHost),
         ],
-        resource_deps = ["const-gen"],
         labels = ["near"],
         trigger_mode = trigger_mode,
     )
@@ -832,14 +830,13 @@ if wormchain:
             port_forward(9090, container_port = 9090, name = "GRPC", host = webHost),
             port_forward(26659, container_port = 26657, name = "TENDERMINT [:26659]", host = webHost)
         ],
-        resource_deps = ["const-gen"],
         labels = ["wormchain"],
         trigger_mode = trigger_mode,
     )
 
     k8s_resource(
         "wormchain-deploy",
-        resource_deps = ["const-gen", "wormchain"],
+        resource_deps = ["wormchain"],
         labels = ["wormchain"],
         trigger_mode = trigger_mode,
     )
@@ -900,7 +897,6 @@ if aptos:
             port_forward(6181, name = "FullNode [:6181]", host = webHost),
             port_forward(8081, name = "Faucet [:8081]", host = webHost),
         ],
-        resource_deps = ["const-gen"],
         labels = ["aptos"],
         trigger_mode = trigger_mode,
     )
