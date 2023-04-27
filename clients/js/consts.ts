@@ -19,8 +19,9 @@ const OVERRIDES = {
   },
   TESTNET: {
     sui: {
-      core: undefined,
-      token_bridge: undefined,
+      core: "0x15e1e51cb59fe1f987b037da12745a278855c8ac73050f4f194466096a0ca05b",
+      token_bridge:
+        "0x92d81f28c167d90f84638c654b412fe7fa8e55bdfac7f638bdcf70306289be86",
     },
     aptos: {
       token_bridge:

@@ -347,8 +347,8 @@ const TESTNET = {
     nft_bridge: undefined,
   },
   sui: {
-    core: undefined,
-    token_bridge: undefined,
+    core: "0x15e1e51cb59fe1f987b037da12745a278855c8ac73050f4f194466096a0ca05b",
+    token_bridge: "0x92d81f28c167d90f84638c654b412fe7fa8e55bdfac7f638bdcf70306289be86",
     nft_bridge: undefined,
   },
   moonbeam: {
@@ -839,8 +839,8 @@ export const SUI_OBJECT_IDS = {
     token_bridge_state: undefined,
   },
   TESTNET: {
-    core_state: undefined,
-    token_bridge_state: undefined,
+    core_state: "0x69ae41bdef4770895eb4e7aaefee5e4673acc08f6917b4856cf55549c4573ca8",
+    token_bridge_state: "0x32422cb2f929b6a4e3f81b4791ea11ac2af896b310f3d9442aa1fe924ce0bab4",
   },
   DEVNET: {
     core_state:
