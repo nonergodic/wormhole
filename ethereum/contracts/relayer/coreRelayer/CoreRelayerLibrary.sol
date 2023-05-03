@@ -138,7 +138,7 @@ contract CoreRelayerLibrary is CoreRelayerState, ERC1967Upgrade {
         cu.action = encodedUpgrade.toUint8(index);
         index += 1;
 
-        if (cu.action != 1) {
+        if (cu.action != 2) {
             revert InvalidContractUpgradeAction(cu.action);
         }
 
@@ -173,7 +173,7 @@ contract CoreRelayerLibrary is CoreRelayerState, ERC1967Upgrade {
         registerChain.chain = encodedRegistration.toUint16(index);
         index += 2;
 
-        if (registerChain.action != 2) {
+        if (registerChain.action != 1) {
             revert InvalidRegisterChainAction(registerChain.action);
         }
 
