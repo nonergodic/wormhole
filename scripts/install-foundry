@@ -47,7 +47,9 @@ function install_mac() {
   fi
 
   if ! command -v foundryup > /dev/null; then
-    curl -L https://foundry.paradigm.xyz --silent | bash
+    # In the latest github actions runner, XDG_CONFIG_HOME is set to ${HOME}/.config,
+    # so we unset it to ensure foundryup is installed to ${HOME}/.foundry/bin
+    curl -L https://foundry.paradigm.xyz --silent | XDG_CONFIG_HOME= bash
     "$HOME/.foundry/bin/foundryup"
   fi
 
@@ -69,7 +71,9 @@ function install_mac() {
 
 function install_linux() {
   if ! command -v foundryup > /dev/null; then
-    curl -L https://foundry.paradigm.xyz --silent | bash
+    # In the latest github actions runner, XDG_CONFIG_HOME is set to ${HOME}/.config,
+    # so we unset it to ensure foundryup is installed to ${HOME}/.foundry/bin
+    curl -L https://foundry.paradigm.xyz --silent | XDG_CONFIG_HOME= bash
     "$HOME/.foundry/bin/foundryup"
   fi
 
