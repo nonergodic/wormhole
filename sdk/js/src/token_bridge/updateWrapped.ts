@@ -44,16 +44,17 @@ export async function updateWrappedOnSui(
   coreBridgeStateObjectId: string,
   tokenBridgeStateObjectId: string,
   coinPackageId: string,
-  attestVAA: Uint8Array
+  attestVAA: Uint8Array,
+  coreBridgePackageId?: string,
+  tokenBridgePackageId?: string
 ): Promise<TransactionBlock> {
-  const coreBridgePackageId = await getPackageId(
-    provider,
-    coreBridgeStateObjectId
-  );
-  const tokenBridgePackageId = await getPackageId(
-    provider,
-    tokenBridgeStateObjectId
-  );
+  coreBridgePackageId =
+    coreBridgePackageId ??
+    (await getPackageId(provider, coreBridgeStateObjectId));
+
+  tokenBridgePackageId =
+    tokenBridgePackageId ??
+    (await getPackageId(provider, tokenBridgeStateObjectId));
 
   // Get coin metadata
   const coinType = getWrappedCoinType(coinPackageId);

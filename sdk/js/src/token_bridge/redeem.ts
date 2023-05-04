@@ -367,7 +367,9 @@ export async function redeemOnSui(
   provider: JsonRpcProvider,
   coreBridgeStateObjectId: string,
   tokenBridgeStateObjectId: string,
-  transferVAA: Uint8Array
+  transferVAA: Uint8Array,
+  coreBridgePackageId?: string,
+  tokenBridgePackageId?: string
 ): Promise<TransactionBlock> {
   const { tokenAddress, tokenChain } = parseTokenTransferVaa(transferVAA);
   const coinType = await getTokenCoinType(
@@ -379,14 +381,13 @@ export async function redeemOnSui(
   if (!coinType) {
     throw new Error("Unable to fetch token coinType");
   }
-  const coreBridgePackageId = await getPackageId(
-    provider,
-    coreBridgeStateObjectId
-  );
-  const tokenBridgePackageId = await getPackageId(
-    provider,
-    tokenBridgeStateObjectId
-  );
+  coreBridgePackageId =
+    coreBridgePackageId ??
+    (await getPackageId(provider, coreBridgeStateObjectId));
+
+  tokenBridgePackageId =
+    tokenBridgePackageId ??
+    (await getPackageId(provider, tokenBridgeStateObjectId));
   const tx = new TransactionBlock();
   const [verifiedVAA] = tx.moveCall({
     target: `${coreBridgePackageId}::vaa::parse_and_verify`,

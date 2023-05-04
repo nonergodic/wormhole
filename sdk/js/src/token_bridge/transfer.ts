@@ -933,7 +933,9 @@ export async function transferFromSui(
   recipient: Uint8Array,
   feeAmount: bigint = BigInt(0),
   relayerFee: bigint = BigInt(0),
-  payload: Uint8Array | null = null
+  payload: Uint8Array | null = null,
+  coreBridgePackageId?: string,
+  tokenBridgePackageId?: string
 ) {
   if (payload !== null) {
     throw new Error("Sui transfer with payload not implemented");
@@ -946,14 +948,12 @@ export async function transferFromSui(
       `Coins array doesn't contain any coins of type ${coinType}`
     );
   }
-  const coreBridgePackageId = await getPackageId(
-    provider,
-    coreBridgeStateObjectId
-  );
-  const tokenBridgePackageId = await getPackageId(
-    provider,
-    tokenBridgeStateObjectId
-  );
+  coreBridgePackageId =
+    coreBridgePackageId ??
+    (await getPackageId(provider, coreBridgeStateObjectId));
+  tokenBridgePackageId =
+    tokenBridgePackageId ??
+    (await getPackageId(provider, tokenBridgeStateObjectId));
   const tx = new TransactionBlock();
   const [transferCoin] = (() => {
     if (coinType === SUI_TYPE_ARG) {
